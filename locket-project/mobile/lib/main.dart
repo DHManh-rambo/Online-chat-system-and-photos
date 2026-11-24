@@ -3,17 +3,26 @@ import 'package:firebase_core/firebase_core.dart';
 
 import 'firebase_options.dart';
 
+import 'services/firebase_auth_service.dart';
+import 'repositories/auth_repository.dart';
+import 'view/auth/auth_gate.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Khởi tạo Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  runApp(const LocketApp());
+  final authService = FirebaseAuthService();
+
+  final authRepository = AuthRepository(authService);
+
+  runApp(LocketApp(repository: authRepository));
 }
 
 class LocketApp extends StatelessWidget {
-  const LocketApp({super.key});
+  final AuthRepository repository;
+
+  const LocketApp({super.key, required this.repository});
 
   @override
   Widget build(BuildContext context) {
@@ -21,31 +30,7 @@ class LocketApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Locket',
       theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
-      home: const HomePage(),
-    );
-  }
-}
-
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Locket')),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.cloud_done, color: Colors.green, size: 70),
-            SizedBox(height: 20),
-            Text(
-              'Firebase Connected!',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-      ),
+      home: AuthGate(repository: repository),
     );
   }
 }

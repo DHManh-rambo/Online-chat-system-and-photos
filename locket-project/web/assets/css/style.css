@@ -1,0 +1,163 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    background: #f4f6f8;
+    color: #1f2937;
+}
+
+header {
+    background: #1976d2;
+    color: #fff;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    font-size: 18px;
+    margin: 0;
+}
+
+main {
+    max-width: 1000px;
+    margin: 24px auto;
+    padding: 0 16px;
+}
+
+.card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px #0002;
+}
+
+.toolbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+input,
+select {
+    padding: 9px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 14px;
+    width: 100%;
+}
+
+.toolbar input {
+    flex: 1;
+}
+
+button {
+    padding: 8px 14px;
+    border: 0;
+    border-radius: 6px;
+    background: #1976d2;
+    color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+button.gray {
+    background: #64748b;
+}
+
+button.red {
+    background: #dc2626;
+}
+
+button.green {
+    background: #16a34a;
+}
+
+button.sm {
+    padding: 5px 9px;
+    font-size: 12px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 10px 8px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.badge {
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    background: #e0f2fe;
+}
+
+.badge.disabled {
+    background: #fee2e2;
+}
+
+.badge.admin {
+    background: #fef3c7;
+}
+
+.pager {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+}
+
+.msg {
+    color: #dc2626;
+    font-size: 14px;
+    min-height: 20px;
+}
+
+dialog {
+    border: 0;
+    border-radius: 8px;
+    padding: 24px;
+    width: 380px;
+}
+
+dialog::backdrop {
+    background: #0006;
+}
+
+label {
+    display: block;
+    margin: 12px 0 4px;
+    font-size: 13px;
+}
+
+.row {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+
+.login {
+    max-width: 360px;
+    margin: 12vh auto;
+}
+
+.detail dt {
+    color: #64748b;
+    font-size: 13px;
+    margin-top: 12px;
+}
+
+.detail dd {
+    margin: 2px 0 0;
+}

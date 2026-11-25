@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chi tiết tài khoản</title>
+    <link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+
+<body>
+    <header>
+        <h1>Locket Admin · Chi tiết</h1>
+        <a href="users.html"><button class="gray">← Danh sách</button></a>
+    </header>
+    <main>
+        <div class="card">
+            <p class="msg" id="msg"></p>
+            <dl class="detail" id="info"></dl>
+            <div class="row">
+                <button id="bEmail">Gửi email đặt lại mật khẩu</button>
+                <button id="bPass" class="gray">Đổi mật khẩu</button>
+                <button id="bRole" class="gray">Đổi quyền</button>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { requireAdmin } from "../assets/js/auth.js";
+        import { api, esc } from "../assets/js/api.js";
+
+        const $ = (id) => document.getElementById(id);
+        const uid = new URLSearchParams(location.search).get("uid");
+        let user = null;
+
+        async function load() {
+            try {
+                user = (await api(`/users/${encodeURIComponent(uid)}`)).data;
+                const rows = [
+                    ["UID", user.uid], ["Tên", user.displayName], ["Email", user.email],
+                    ["Số điện thoại", user.phoneNumber || "—"],
+                    ["Quyền (Firestore)", user.role],
+                    ["Claim admin (Auth)", user.isAdminClaim],
+                    ["Trạng thái (Firestore)", user.status],
+                    ["Bị vô hiệu hóa (Auth)", user.authDisabled],
+                    ["Ngày tạo", user.createdAt ? new Date(user.createdAt).toLocaleString("vi-VN") : "—"],
+                ];
+                $("info").innerHTML = rows.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join("");
+            } catch (err) { $("msg").textContent = err.message; }
+        }
+
+        async function run(fn, okText) {
+            $("msg").style.color = "#dc2626";
+            try { await fn(); $("msg").style.color = "#16a34a"; $("msg").textContent = okText; load(); }
+            catch (err) { $("msg").textContent = err.message; }
+        }
+
+        $("bEmail").onclick = () => confirm(`Gửi email đặt lại mật khẩu tới ${user.email}?`) &&
+            run(() => api(`/users/${uid}/reset-email`, { method: "POST" }), "Đã gửi email");
+
+        $("bPass").onclick = () => {
+            const p = prompt("Nhập mật khẩu mới (tối thiểu 8 ký tự):");
+            if (p) run(() => api(`/users/${uid}/password`, { method: "POST", body: { newPassword: p } }), "Đã đổi mật khẩu");
+        };
+
+        $("bRole").onclick = () => {
+            const role = user.role === "admin" ? "user" : "admin";
+            if (confirm(`Đổi quyền thành ${role}? Người này sẽ phải đăng nhập lại.`))
+                run(() => api(`/users/${uid}/role`, { method: "PATCH", body: { role } }), "Đã đổi quyền");
+        };
+
+        await requireAdmin();
+        load();
+    </script>
+</body>
+
+</html>

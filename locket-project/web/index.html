@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Locket Admin - Đăng nhập</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+
+<body>
+    <div class="card login">
+        <h2>Locket Admin</h2>
+        <form id="form">
+            <label>Email</label>
+            <input id="email" type="email" required />
+            <label>Mật khẩu</label>
+            <input id="password" type="password" required />
+            <p class="msg" id="msg"></p>
+            <button style="width:100%">Đăng nhập</button>
+        </form>
+    </div>
+
+    <script type="module">
+        import { login, USERS_URL } from "./assets/js/auth.js";
+
+        document.getElementById("form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const msg = document.getElementById("msg");
+            msg.textContent = "";
+            try {
+                await login(email.value.trim(), password.value);
+                location.href = USERS_URL;
+            } catch (err) {
+                msg.textContent = err.message;
+            }
+        });
+    </script>
+</body>
+
+</html>

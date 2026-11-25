@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quản lý tài khoản</title>
+    <link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+
+<body>
+    <header>
+        <h1>Locket Admin · Tài khoản</h1>
+        <button class="gray" id="logout">Đăng xuất</button>
+    </header>
+
+    <main>
+        <div class="card">
+            <div class="toolbar">
+                <input id="search" placeholder="Tìm theo email hoặc tên..." />
+                <button id="btnSearch">Tìm</button>
+                <button class="green" id="btnAdd">+ Thêm</button>
+            </div>
+            <p class="msg" id="msg"></p>
+            <div style="overflow-x:auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tên</th>
+                            <th>Email</th>
+                            <th>Quyền</th>
+                            <th>Trạng thái</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="rows"></tbody>
+                </table>
+            </div>
+            <div class="pager">
+                <button class="gray sm" id="prev">Trước</button>
+                <span id="pageInfo"></span>
+                <button class="gray sm" id="next">Sau</button>
+            </div>
+        </div>
+    </main>
+
+    <dialog id="dlg">
+        <h3 id="dlgTitle"></h3>
+        <form id="form">
+            <label>Họ và tên</label><input id="fName" required />
+            <label>Email</label><input id="fEmail" type="email" required />
+            <div id="createOnly">
+                <label>Mật khẩu (tối thiểu 8 ký tự)</label><input id="fPass" type="password" />
+                <label>Quyền</label>
+                <select id="fRole">
+                    <option value="user">user</option>
+                    <option value="admin">admin</option>
+                </select>
+            </div>
+            <div id="editOnly">
+                <label>Số điện thoại</label><input id="fPhone" />
+            </div>
+            <p class="msg" id="fMsg"></p>
+            <div class="row">
+                <button>Lưu</button>
+                <button type="button" class="gray" id="btnCancel">Hủy</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script type="module" src="../assets/js/users.js"></script>
+</body>
+
+</html>

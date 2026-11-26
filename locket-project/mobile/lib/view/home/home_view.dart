@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../models/user_model.dart';
 import '../../repositories/auth_repository.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomeView extends StatelessWidget {
   final UserModel user;
@@ -12,14 +11,14 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final avatarUrl = user.avatarUrl;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Locket'),
         actions: [
           IconButton(
-            onPressed: () async {
-              await repository.logout();
-            },
+            onPressed: () => repository.logout(),
             icon: const Icon(Icons.logout),
           ),
         ],
@@ -28,27 +27,24 @@ class HomeView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.camera_alt, size: 80, color: Colors.blue),
+            // Avatar: chưa có upload, hiện chữ cái đầu. Sau này chỉ cần
+            // gán avatarUrl là tự hiện ảnh.
+            CircleAvatar(
+              radius: 48,
+              backgroundImage: avatarUrl != null
+                  ? NetworkImage(avatarUrl)
+                  : null,
+              child: avatarUrl == null
+                  ? Text(user.initials, style: const TextStyle(fontSize: 36))
+                  : null,
+            ),
             const SizedBox(height: 20),
             const Text('Xin chào!', style: TextStyle(fontSize: 24)),
-            Text('Tên: ${user.displayName}'),
+            Text('Tên: ${user.fullName}'),
             Text('Email: ${user.email}'),
-            Text('Quyền: ${user.role}'),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                try {
-                  await FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(user.uid)
-                      .update({'role': 'admin'});
-                  debugPrint('KẾT QUẢ: update THÀNH CÔNG (RULES BỊ HỞ!)');
-                } catch (e) {
-                  debugPrint('KẾT QUẢ: bị chặn đúng ý -> $e');
-                }
-              },
-              child: const Text('TEST: tự nâng quyền'),
-            ),
+            if (user.phone != null) Text('SĐT: ${user.phone}'),
+            if (user.dateOfBirthText != null)
+              Text('Ngày sinh: ${user.dateOfBirthText}'),
           ],
         ),
       ),

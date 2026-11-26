@@ -18,9 +18,7 @@ class AdminView extends StatelessWidget {
         foregroundColor: Colors.white,
         actions: [
           IconButton(
-            onPressed: () async {
-              await repository.logout();
-            },
+            onPressed: () => repository.logout(),
             icon: const Icon(Icons.logout),
           ),
         ],
@@ -39,7 +37,7 @@ class AdminView extends StatelessWidget {
               'ADMIN DASHBOARD',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            Text('Xin chào ${user.displayName}'),
+            Text('Xin chào ${user.fullName}'),
             Text('Email: ${user.email}'),
           ],
         ),

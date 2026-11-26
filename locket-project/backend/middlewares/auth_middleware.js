@@ -1,5 +1,5 @@
-const { auth } = require('../config/firebase');
-const AppError = require('../utils/appError');
+const { auth } = require('../config/fire_base');
+const { AppError } = require('../utils/app_error');
 
 // Xác thực ID Token trong header: Authorization: Bearer <token>
 async function verifyToken(req, res, next) {
@@ -9,10 +9,10 @@ async function verifyToken(req, res, next) {
         throw new AppError('Thiếu token đăng nhập', 401, 'missing_token');
     }
 
-    const token = header.slice(7);
+    const token = header.slice('Bearer '.length);
 
     try {
-        // true = kiểm tra token đã bị thu hồi hoặc tài khoản đã bị khóa chưa
+        // Tham số `true`: kiểm tra token đã bị thu hồi hoặc tài khoản đã bị khóa chưa
         req.user = await auth.verifyIdToken(token, true);
     } catch (err) {
         throw new AppError('Token không hợp lệ hoặc đã hết hạn', 401, 'invalid_token');
@@ -21,7 +21,7 @@ async function verifyToken(req, res, next) {
     next();
 }
 
-// Chỉ cho qua nếu token có Custom Claim admin = true
+// Chỉ cho qua nếu token có Custom Claim admin === true
 function requireAdmin(req, res, next) {
     if (!req.user || req.user.admin !== true) {
         throw new AppError('Bạn không có quyền quản trị', 403, 'forbidden');

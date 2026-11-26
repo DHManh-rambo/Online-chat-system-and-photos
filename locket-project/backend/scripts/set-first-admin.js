@@ -1,4 +1,4 @@
-const { auth, db } = require('../config/firebase');
+const { auth, db } = require('../config/fire_base');
 
 async function main() {
     const email = process.argv[2];

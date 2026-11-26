@@ -16,11 +16,11 @@
     <main>
         <div class="card">
             <p class="msg" id="msg"></p>
+            <div id="avatar" style="margin-bottom:12px"></div>
             <dl class="detail" id="info"></dl>
             <div class="row">
                 <button id="bEmail">Gửi email đặt lại mật khẩu</button>
                 <button id="bPass" class="gray">Đổi mật khẩu</button>
-                <button id="bRole" class="gray">Đổi quyền</button>
             </div>
         </div>
     </main>
@@ -31,19 +31,34 @@
 
         const $ = (id) => document.getElementById(id);
         const uid = new URLSearchParams(location.search).get("uid");
+        const STATUS_TEXT = { pending: "Chờ xác thực", active: "Hoạt động", locked: "Bị khóa" };
+        const yn = (b) => (b === null || b === undefined ? "—" : b ? "Có" : "Không");
+        const when = (iso) => (iso ? new Date(iso).toLocaleString("vi-VN") : "—");
         let user = null;
 
         async function load() {
             try {
                 user = (await api(`/users/${encodeURIComponent(uid)}`)).data;
+
+                // Avatar: chưa có ảnh thì hiện chữ cái đầu
+                const initial = (user.fullName.trim().split(/\s+/).pop() || "?")[0].toUpperCase();
+                $("avatar").innerHTML = user.avatarUrl
+                    ? `<img src="${esc(user.avatarUrl)}" alt="avatar" width="72" height="72" style="border-radius:50%;object-fit:cover">`
+                    : `<div style="width:72px;height:72px;border-radius:50%;background:#dbeafe;color:#1d4ed8;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:700">${esc(initial)}</div>`;
+
                 const rows = [
-                    ["UID", user.uid], ["Tên", user.displayName], ["Email", user.email],
-                    ["Số điện thoại", user.phoneNumber || "—"],
+                    ["UID", user.uid],
+                    ["Họ tên", user.fullName],
+                    ["Email", user.email],
+                    ["Email đã xác thực", yn(user.emailVerified)],
+                    ["Số điện thoại", user.phone || "—"],
+                    ["Ngày sinh", user.dateOfBirth ? user.dateOfBirth.split("-").reverse().join("/") : "—"],
                     ["Quyền (Firestore)", user.role],
-                    ["Claim admin (Auth)", user.isAdminClaim],
-                    ["Trạng thái (Firestore)", user.status],
-                    ["Bị vô hiệu hóa (Auth)", user.authDisabled],
-                    ["Ngày tạo", user.createdAt ? new Date(user.createdAt).toLocaleString("vi-VN") : "—"],
+                    ["Claim admin (Auth)", yn(user.isAdminClaim)],
+                    ["Trạng thái (Firestore)", STATUS_TEXT[user.status] || user.status],
+                    ["Bị vô hiệu hóa (Auth)", yn(user.authDisabled)],
+                    ["Ngày tạo", when(user.createdAt)],
+                    ["Cập nhật lần cuối", when(user.updatedAt)],
                 ];
                 $("info").innerHTML = rows.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join("");
             } catch (err) { $("msg").textContent = err.message; }
@@ -59,18 +74,11 @@
             run(() => api(`/users/${uid}/reset-email`, { method: "POST" }), "Đã gửi email");
 
         $("bPass").onclick = () => {
-            const p = prompt("Nhập mật khẩu mới (tối thiểu 8 ký tự):");
+            const p = prompt("Nhập mật khẩu mới (tối thiểu 6 ký tự):");
             if (p) run(() => api(`/users/${uid}/password`, { method: "POST", body: { newPassword: p } }), "Đã đổi mật khẩu");
         };
 
-        $("bRole").onclick = () => {
-            const role = user.role === "admin" ? "user" : "admin";
-            if (confirm(`Đổi quyền thành ${role}? Người này sẽ phải đăng nhập lại.`))
-                run(() => api(`/users/${uid}/role`, { method: "PATCH", body: { role } }), "Đã đổi quyền");
-        };
-
-        await requireAdmin();
-        load();
+        if (await requireAdmin()) load();
     </script>
 </body>
 

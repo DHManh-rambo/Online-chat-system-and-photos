@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../models/user_model.dart';
+import '../models/auth_exception.dart';
 import '../repositories/auth_repository.dart';
 
 class AuthViewModel extends ChangeNotifier {
@@ -9,20 +9,14 @@ class AuthViewModel extends ChangeNotifier {
   AuthViewModel(this._repository);
 
   bool _disposed = false;
-
-  UserModel? currentUser;
-
   bool isLoading = false;
-
   String? errorMessage;
 
   // Không gọi notifyListeners nếu ViewModel đã bị hủy
-  // (xảy ra khi AuthGate chuyển màn hình ngay sau khi đăng nhập)
+  // (xảy ra khi AuthGate chuyển màn hình ngay sau khi thao tác xong).
   @override
   void notifyListeners() {
-    if (!_disposed) {
-      super.notifyListeners();
-    }
+    if (!_disposed) super.notifyListeners();
   }
 
   @override
@@ -31,53 +25,55 @@ class AuthViewModel extends ChangeNotifier {
     super.dispose();
   }
 
-  Future<bool> register({
+  Future<bool> _run(Future<void> Function() action) async {
+    try {
+      isLoading = true;
+      errorMessage = null;
+      notifyListeners();
+      await action();
+      return true;
+    } on AuthException catch (e) {
+      errorMessage = e.message;
+      return false;
+    } catch (_) {
+      errorMessage = 'Đã có lỗi xảy ra, vui lòng thử lại';
+      return false;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> startRegistration({
+    required String fullName,
+    required String phone,
     required String email,
-    required String password,
-    required String displayName,
-  }) async {
-    try {
-      isLoading = true;
-      errorMessage = null;
-      notifyListeners();
-
-      currentUser = await _repository.register(
+    required DateTime dateOfBirth,
+  }) {
+    return _run(
+      () => _repository.startRegistration(
+        fullName: fullName,
+        phone: phone,
         email: email,
-        password: password,
-        displayName: displayName,
-      );
-
-      return true;
-    } catch (e) {
-      errorMessage = e.toString();
-      return false;
-    } finally {
-      isLoading = false;
-      notifyListeners();
-    }
+        dateOfBirth: dateOfBirth,
+      ),
+    );
   }
 
-  Future<bool> login({required String email, required String password}) async {
-    try {
-      isLoading = true;
-      errorMessage = null;
-      notifyListeners();
+  Future<bool> resendVerificationEmail() =>
+      _run(_repository.resendVerificationEmail);
 
-      currentUser = await _repository.login(email: email, password: password);
+  Future<bool> completeRegistration(String newPassword) =>
+      _run(() => _repository.completeRegistration(newPassword));
 
-      return true;
-    } catch (e) {
-      errorMessage = e.toString();
-      return false;
-    } finally {
-      isLoading = false;
-      notifyListeners();
-    }
+  Future<bool> cancelRegistration() => _run(_repository.cancelRegistration);
+
+  Future<bool> login({required String email, required String password}) {
+    return _run(() => _repository.login(email: email, password: password));
   }
 
-  Future<void> logout() async {
-    await _repository.logout();
-    currentUser = null;
-    notifyListeners();
-  }
+  Future<bool> sendPasswordReset(String email) =>
+      _run(() => _repository.sendPasswordReset(email));
+
+  Future<void> logout() => _repository.logout();
 }

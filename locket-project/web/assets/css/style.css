@@ -161,3 +161,19 @@ label {
 .detail dd {
     margin: 2px 0 0;
 }
+
+/* Dán thêm vào cuối assets/css/style.css */
+.badge.customer {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.badge.pending {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.badge.locked {
+    background: #fee2e2;
+    color: #b91c1c;
+}

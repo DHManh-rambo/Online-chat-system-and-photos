@@ -3,16 +3,17 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 
-const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes');
-const { notFound, errorHandler } = require('./middlewares/errorHandler');
+const authRoutes = require('./routes/auth/auth_routes.js');
+const userRoutes = require('./routes/user_routes.js');
+const dashboardRoutes = require('./routes/dashboard_routes.js');
+const { notFound, errorHandler } = require('./utils/app_error.js');
 
 const app = express();
 
-// Chỉ cho các web trong CORS_ORIGINS (file .env) gọi API
+// Danh sách origin được phép gọi API, đọc từ biến môi trường CORS_ORIGINS
 const allowedOrigins = (process.env.CORS_ORIGINS || '')
     .split(',')
-    .map((s) => s.trim())
+    .map((origin) => origin.trim())
     .filter(Boolean);
 
 app.use(
@@ -31,6 +32,7 @@ app.get('/', (req, res) => {
 // 1. Các route nghiệp vụ
 app.use('/api', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // 2. notFound và errorHandler LUÔN đặt cuối cùng
 app.use(notFound);

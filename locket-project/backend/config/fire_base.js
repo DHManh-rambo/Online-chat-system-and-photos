@@ -5,7 +5,9 @@ const admin = require('firebase-admin');
 
 const serviceAccount = require('../keys/service_account_key.json');
 
-if (!getApps().length) {
+// Chỉ khởi tạo Firebase một lần duy nhất.
+// Tránh lỗi "app already exists" khi hot-reload hoặc khi file được require nhiều nơi.
+if (getApps().length === 0) {
     initializeApp({
         credential: cert(serviceAccount),
     });

@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
 import '../models/user_model.dart';
 import '../services/firebase_auth_service.dart';
 
@@ -6,29 +8,42 @@ class AuthRepository {
 
   AuthRepository(this._authService);
 
-  Future<UserModel> register({
+  Stream<User?> get authStateChanges => _authService.authStateChanges;
+
+  bool get isEmailVerified => _authService.isEmailVerified;
+
+  Stream<UserModel?> watchUser(String uid) => _authService.watchUser(uid);
+
+  Future<void> startRegistration({
+    required String fullName,
+    required String phone,
     required String email,
-    required String password,
-    required String displayName,
+    required DateTime dateOfBirth,
   }) {
-    return _authService.register(
+    return _authService.startRegistration(
+      fullName: fullName,
+      phone: phone,
       email: email,
-      password: password,
-      displayName: displayName,
+      dateOfBirth: dateOfBirth,
     );
   }
+
+  Future<void> resendVerificationEmail() =>
+      _authService.resendVerificationEmail();
+
+  Future<bool> refreshEmailVerified() => _authService.refreshEmailVerified();
+
+  Future<void> completeRegistration(String newPassword) =>
+      _authService.completeRegistration(newPassword);
+
+  Future<void> cancelRegistration() => _authService.cancelRegistration();
 
   Future<UserModel> login({required String email, required String password}) {
     return _authService.login(email: email, password: password);
   }
 
-  Future<void> logout() {
-    return _authService.logout();
-  }
+  Future<void> logout() => _authService.logout();
 
-  Future<UserModel?> getCurrentUser() {
-    return _authService.getCurrentUser();
-  }
-
-  Stream get authStateChanges => _authService.authStateChanges;
+  Future<void> sendPasswordReset(String email) =>
+      _authService.sendPasswordReset(email);
 }

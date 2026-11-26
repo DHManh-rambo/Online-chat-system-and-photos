@@ -26,15 +26,33 @@ export async function logout() {
 // Chỉ để điều hướng giao diện. Quyền thật do backend kiểm tra.
 export function requireAdmin() {
     return new Promise((resolve) => {
+        const redirectToLogin = () => {
+            location.replace(LOGIN_URL);
+            resolve(false);
+        };
+
         const off = onAuthStateChanged(auth, async (user) => {
             off();
-            if (!user) return location.replace(LOGIN_URL);
-            const t = await user.getIdTokenResult(true);
-            if (t.claims.admin !== true) {
-                await signOut(auth);
-                return location.replace(LOGIN_URL);
+            if (!user) return redirectToLogin();
+
+            try {
+                const t = await user.getIdTokenResult(true);
+                if (t.claims.admin === true) return resolve(true);
+            } catch (err) {
+                console.error('Không thể kiểm tra quyền admin:', err);
             }
-            resolve(user);
+
+            try {
+                await signOut(auth);
+            } catch (err) {
+                console.error('Không thể đăng xuất phiên admin:', err);
+            }
+
+            redirectToLogin();
+        }, (err) => {
+            off();
+            console.error('Không thể đọc trạng thái đăng nhập:', err);
+            redirectToLogin();
         });
     });
 }

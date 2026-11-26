@@ -33,19 +33,67 @@ class _LoginViewState extends State<LoginView> {
     super.dispose();
   }
 
-  Future<void> handleLogin() async {
-    final success = await viewModel.login(
-      email: emailController.text.trim(),
-      password: passwordController.text.trim(),
-    );
+  void _toast(String text) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+  }
 
+  Future<void> handleLogin() async {
+    final email = emailController.text.trim();
+    final password = passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      _toast('Vui lòng nhập email và mật khẩu');
+      return;
+    }
+
+    final success = await viewModel.login(email: email, password: password);
     if (!mounted) return;
 
     if (!success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(viewModel.errorMessage ?? 'Đăng nhập thất bại')),
-      );
+      _toast(viewModel.errorMessage ?? 'Đăng nhập thất bại');
     }
+    // Thành công: AuthGate tự chuyển màn hình.
+  }
+
+  Future<void> handleForgotPassword() async {
+    final controller = TextEditingController(text: emailController.text.trim());
+
+    final email = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Quên mật khẩu'),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.emailAddress,
+          decoration: const InputDecoration(
+            labelText: 'Email',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Hủy'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+            child: const Text('Gửi email'),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+
+    if (email == null || email.isEmpty) return;
+
+    final ok = await viewModel.sendPasswordReset(email);
+    if (!mounted) return;
+
+    _toast(
+      ok
+          ? 'Nếu email tồn tại, chúng tôi đã gửi hướng dẫn đặt lại mật khẩu'
+          : (viewModel.errorMessage ?? 'Không thể gửi email'),
+    );
   }
 
   @override
@@ -61,16 +109,12 @@ class _LoginViewState extends State<LoginView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Icon(Icons.camera_alt, size: 80, color: Colors.blue),
-
                   const SizedBox(height: 20),
-
                   const Text(
                     'Welcome to Locket',
                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                   ),
-
                   const SizedBox(height: 30),
-
                   TextField(
                     controller: emailController,
                     keyboardType: TextInputType.emailAddress,
@@ -80,9 +124,7 @@ class _LoginViewState extends State<LoginView> {
                       border: OutlineInputBorder(),
                     ),
                   ),
-
                   const SizedBox(height: 16),
-
                   TextField(
                     controller: passwordController,
                     obscureText: true,
@@ -92,9 +134,16 @@ class _LoginViewState extends State<LoginView> {
                       border: OutlineInputBorder(),
                     ),
                   ),
-
-                  const SizedBox(height: 24),
-
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: viewModel.isLoading
+                          ? null
+                          : handleForgotPassword,
+                      child: const Text('Quên mật khẩu?'),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   SizedBox(
                     width: double.infinity,
                     height: 50,
@@ -105,9 +154,7 @@ class _LoginViewState extends State<LoginView> {
                           : const Text('Đăng nhập'),
                     ),
                   ),
-
                   const SizedBox(height: 16),
-
                   TextButton(
                     onPressed: () {
                       Navigator.push(

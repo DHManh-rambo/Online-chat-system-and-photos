@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Thống kê</title>
+    <link rel="stylesheet" href="../assets/css/style.css" />
+    <style>
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .stat {
+            padding: 14px;
+            border-radius: 10px;
+            background: #f1f5f9;
+        }
+
+        .stat b {
+            display: block;
+            font-size: 28px;
+        }
+
+        .stat span {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            height: 160px;
+            margin-top: 12px;
+        }
+
+        .bar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            height: 100%;
+            font-size: 12px;
+        }
+
+        .bar i {
+            display: block;
+            width: 100%;
+            max-width: 40px;
+            background: #3b82f6;
+            border-radius: 6px 6px 0 0;
+            min-height: 2px;
+        }
+
+        .bar small {
+            color: #64748b;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Locket Admin · Thống kê</h1>
+        <div class="row">
+            <a href="users.html"><button class="gray">Tài khoản</button></a>
+            <button class="gray" id="logout">Đăng xuất</button>
+        </div>
+    </header>
+    <main>
+        <div class="card">
+            <p class="msg" id="msg"></p>
+            <div class="stats" id="stats"></div>
+            <h3>Đăng ký mới 7 ngày gần nhất</h3>
+            <div class="bars" id="bars"></div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { requireAdmin, logout } from "../assets/js/auth.js";
+        import { api, esc } from "../assets/js/api.js";
+
+        const $ = (id) => document.getElementById(id);
+
+        async function load() {
+            try {
+                const d = (await api("/dashboard/overview")).data;
+
+                const cards = [
+                    ["Tổng tài khoản", d.total],
+                    ["Hoạt động", d.byStatus.active],
+                    ["Chờ xác thực", d.byStatus.pending],
+                    ["Bị khóa", d.byStatus.locked],
+                    ["Khách hàng", d.byRole.customer],
+                    ["Quản trị viên", d.byRole.admin],
+                    ["Mới hôm nay", d.newToday],
+                    ["Mới 7 ngày", d.new7Days],
+                ];
+                $("stats").innerHTML = cards
+                    .map(([label, n]) => `<div class="stat"><b>${esc(n)}</b><span>${esc(label)}</span></div>`)
+                    .join("");
+
+                const max = Math.max(...d.signupsByDay.map((x) => x.count), 1);
+                $("bars").innerHTML = d.signupsByDay.map((x) => {
+                    const [, m, day] = x.date.split("-");
+                    return `<div class="bar">${esc(x.count)}<i style="height:${(x.count / max) * 100}%"></i><small>${esc(day)}/${esc(m)}</small></div>`;
+                }).join("");
+            } catch (err) { $("msg").textContent = err.message; }
+        }
+
+        $("logout").onclick = logout;
+        if (await requireAdmin()) load();
+    </script>
+</body>
+
+</html>

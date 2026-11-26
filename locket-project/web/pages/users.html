@@ -11,13 +11,27 @@
 <body>
     <header>
         <h1>Locket Admin · Tài khoản</h1>
-        <button class="gray" id="logout">Đăng xuất</button>
+        <div class="row">
+            <a href="dashboard.html"><button class="gray">Thống kê</button></a>
+            <button class="gray" id="logout">Đăng xuất</button>
+        </div>
     </header>
 
     <main>
         <div class="card">
             <div class="toolbar">
-                <input id="search" placeholder="Tìm theo email hoặc tên..." />
+                <input id="search" placeholder="Tìm theo tên, email, SĐT..." />
+                <select id="fltStatus">
+                    <option value="">Mọi trạng thái</option>
+                    <option value="active">Hoạt động</option>
+                    <option value="pending">Chờ xác thực</option>
+                    <option value="locked">Bị khóa</option>
+                </select>
+                <select id="fltRole">
+                    <option value="">Mọi quyền</option>
+                    <option value="customer">customer</option>
+                    <option value="admin">admin</option>
+                </select>
                 <button id="btnSearch">Tìm</button>
                 <button class="green" id="btnAdd">+ Thêm</button>
             </div>
@@ -26,8 +40,9 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Tên</th>
+                            <th>Họ tên</th>
                             <th>Email</th>
+                            <th>SĐT</th>
                             <th>Quyền</th>
                             <th>Trạng thái</th>
                             <th></th>
@@ -49,16 +64,15 @@
         <form id="form">
             <label>Họ và tên</label><input id="fName" required />
             <label>Email</label><input id="fEmail" type="email" required />
+            <label>Số điện thoại</label><input id="fPhone" placeholder="0912345678" />
+            <label>Ngày sinh</label><input id="fDob" type="date" />
             <div id="createOnly">
-                <label>Mật khẩu (tối thiểu 8 ký tự)</label><input id="fPass" type="password" />
+                <label>Mật khẩu (tối thiểu 6 ký tự)</label><input id="fPass" type="password" minlength="6" />
                 <label>Quyền</label>
                 <select id="fRole">
-                    <option value="user">user</option>
+                    <option value="customer">customer</option>
                     <option value="admin">admin</option>
                 </select>
-            </div>
-            <div id="editOnly">
-                <label>Số điện thoại</label><input id="fPhone" />
             </div>
             <p class="msg" id="fMsg"></p>
             <div class="row">

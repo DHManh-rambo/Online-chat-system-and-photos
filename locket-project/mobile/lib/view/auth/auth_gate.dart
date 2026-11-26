@@ -1,14 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../models/user_enums.dart';
 import '../../models/user_model.dart';
-import '../../repositories/auth_repository.dart';
-import '../admin/admin_view.dart';
-import '../home/home_view.dart';
-import 'login_view.dart';
-import 'set_password_view.dart';
-import 'verify_email_view.dart';
+import '../../repositories/auth/auth_repository.dart';
+import '../admin/admin_screen.dart';
+import '../home/home_screen.dart';
+import 'login_screen.dart';
+import 'set_password_screen.dart';
+import 'verify_email_screen.dart';
 
 /// Điều hướng theo trạng thái:
 /// chưa đăng nhập -> Login

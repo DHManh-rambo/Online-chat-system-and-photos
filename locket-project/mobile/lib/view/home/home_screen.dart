@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../models/user_model.dart';
-import '../../repositories/auth_repository.dart';
+import '../../repositories/auth/auth_repository.dart';
 
 class HomeView extends StatelessWidget {
   final UserModel user;

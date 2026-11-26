@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../models/user_model.dart';
-import '../../repositories/auth_repository.dart';
-import '../../viewmodels/auth_viewmodel.dart';
+import '../../repositories/auth/auth_repository.dart';
+import '../../viewmodels/auth/auth_viewmodel.dart';
 
 /// Bước 3: "Chào mừng đến với Locket" + đặt mật khẩu.
 /// Xong thì hồ sơ chuyển sang active, AuthGate tự vào trang chủ.

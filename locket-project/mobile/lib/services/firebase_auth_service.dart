@@ -5,8 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-import '../models/auth_exception.dart';
-import '../models/user_enums.dart';
 import '../models/user_model.dart';
 
 class FirebaseAuthService {

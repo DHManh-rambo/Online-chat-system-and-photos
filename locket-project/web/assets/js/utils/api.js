@@ -1,5 +1,5 @@
-import { getToken } from "./auth.js";
-import { API_BASE } from "./firebase-config.js";
+import { getToken } from "../auth/auth.js";
+import { API_BASE } from "./firebase_config.js";
 
 export async function api(path, { method = "GET", body } = {}) {
     const res = await fetch(API_BASE + path, {

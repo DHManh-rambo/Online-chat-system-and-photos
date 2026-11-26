@@ -4,7 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 import 'services/firebase_auth_service.dart';
-import 'repositories/auth_repository.dart';
+import 'repositories/auth/auth_repository.dart';
 import 'view/auth/auth_gate.dart';
 
 Future<void> main() async {

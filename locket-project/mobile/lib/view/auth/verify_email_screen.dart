@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../models/user_model.dart';
-import '../../repositories/auth_repository.dart';
-import '../../viewmodels/auth_viewmodel.dart';
+import '../../repositories/auth/auth_repository.dart';
+import '../../viewmodels/auth/auth_viewmodel.dart';
 
 /// Bước 2: chờ người dùng bấm xác nhận trong email.
 /// App tự hỏi Firebase mỗi 3 giây và khi quay lại từ ứng dụng mail/trình duyệt.

@@ -4,18 +4,21 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Quản lý tài khoản</title>
+    <title>Quản lý người dùng</title>
     <link rel="stylesheet" href="../assets/css/style.css" />
+    <link rel="stylesheet" href="../assets/css/navbar.css" />
+    <link rel="stylesheet" href="../assets/css/user.css" />
 </head>
 
 <body>
-    <header>
-        <h1>Locket Admin · Tài khoản</h1>
-        <div class="row">
-            <a href="dashboard.html"><button class="gray">Thống kê</button></a>
-            <button class="gray" id="logout">Đăng xuất</button>
+    <nav class="navbar">
+        <div class="navbar-brand">Locket Admin</div>
+        <div class="navbar-menu">
+            <a href="dashboard.html">Trang chủ</a>
+            <a href="user.html" class="active">Người dùng</a>
         </div>
-    </header>
+        <button class="navbar-logout" id="logout">Đăng xuất</button>
+    </nav>
 
     <main>
         <div class="card">
@@ -35,7 +38,9 @@
                 <button id="btnSearch">Tìm</button>
                 <button class="green" id="btnAdd">+ Thêm</button>
             </div>
+
             <p class="msg" id="msg"></p>
+
             <div style="overflow-x:auto">
                 <table>
                     <thead>
@@ -51,6 +56,7 @@
                     <tbody id="rows"></tbody>
                 </table>
             </div>
+
             <div class="pager">
                 <button class="gray sm" id="prev">Trước</button>
                 <span id="pageInfo"></span>
@@ -59,6 +65,7 @@
         </div>
     </main>
 
+    <!-- DIALOG THÊM / SỬA -->
     <dialog id="dlg">
         <h3 id="dlgTitle"></h3>
         <form id="form">
@@ -66,20 +73,36 @@
             <label>Email</label><input id="fEmail" type="email" required />
             <label>Số điện thoại</label><input id="fPhone" placeholder="0912345678" />
             <label>Ngày sinh</label><input id="fDob" type="date" />
+
             <div id="createOnly">
-                <label>Mật khẩu (tối thiểu 6 ký tự)</label><input id="fPass" type="password" minlength="6" />
+                <label>Mật khẩu (tối thiểu 6 ký tự)</label>
+                <input id="fPass" type="password" minlength="6" />
                 <label>Quyền</label>
                 <select id="fRole">
                     <option value="customer">customer</option>
                     <option value="admin">admin</option>
                 </select>
             </div>
+
             <p class="msg" id="fMsg"></p>
             <div class="row">
                 <button>Lưu</button>
                 <button type="button" class="gray" id="btnCancel">Hủy</button>
             </div>
         </form>
+    </dialog>
+
+    <!-- DIALOG CHI TIẾT -->
+    <dialog id="detailDlg">
+        <h3>Chi tiết tài khoản</h3>
+        <div id="detailAvatar" style="margin-bottom:12px"></div>
+        <dl class="detail" id="detailInfo"></dl>
+        <p class="msg" id="detailMsg"></p>
+        <div class="row">
+            <button type="button" id="btnSendReset">Gửi email đặt lại mật khẩu</button>
+            <button type="button" class="gray" id="btnChangePass">Đổi mật khẩu</button>
+            <button type="button" class="gray" id="btnCloseDetail">Đóng</button>
+        </div>
     </dialog>
 
     <script type="module" src="../assets/js/users.js"></script>

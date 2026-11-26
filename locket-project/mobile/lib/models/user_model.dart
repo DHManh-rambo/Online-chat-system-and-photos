@@ -1,6 +1,57 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'user_enums.dart';
+// =============================================================
+// 1. EXCEPTIONS
+// =============================================================
+
+/// Lỗi đã được Việt hóa, hiển thị thẳng cho người dùng.
+class AuthException implements Exception {
+  final String message;
+
+  AuthException(this.message);
+
+  @override
+  String toString() => message;
+}
+
+// =============================================================
+// 2. ENUMS
+// =============================================================
+
+enum UserRole {
+  admin,
+  customer;
+
+  String get value => name;
+
+  /// 'user' là giá trị cũ của bản trước, coi như customer.
+  static UserRole fromString(String? value) =>
+      value == 'admin' ? UserRole.admin : UserRole.customer;
+}
+
+enum UserStatus {
+  pending, // chờ xác thực email / chưa đặt mật khẩu
+  active, // hoạt động
+  locked; // bị khóa
+
+  String get value => name;
+
+  /// Giá trị lạ -> locked cho an toàn.
+  static UserStatus fromString(String? value) {
+    switch (value) {
+      case 'pending':
+        return UserStatus.pending;
+      case 'active':
+        return UserStatus.active;
+      default:
+        return UserStatus.locked;
+    }
+  }
+}
+
+// =============================================================
+// 3. DATA MODEL
+// =============================================================
 
 class UserModel {
   // ---- Chung (admin + khách hàng) ----
@@ -33,20 +84,23 @@ class UserModel {
   });
 
   bool get isAdmin => role == UserRole.admin;
+
   bool get isActive => status == UserStatus.active;
 
   String get initials {
     final name = fullName.trim();
     if (name.isEmpty) return '?';
+
     final lastWord = name.split(RegExp(r'\s+')).last;
     return lastWord.substring(0, 1).toUpperCase();
   }
 
   String? get dateOfBirthText {
-    final d = dateOfBirth;
-    if (d == null) return null;
-    return '${d.day.toString().padLeft(2, '0')}/'
-        '${d.month.toString().padLeft(2, '0')}/${d.year}';
+    final dob = dateOfBirth;
+    if (dob == null) return null;
+
+    return '${dob.day.toString().padLeft(2, '0')}/'
+        '${dob.month.toString().padLeft(2, '0')}/${dob.year}';
   }
 
   Map<String, dynamic> toMap() {
@@ -111,9 +165,10 @@ class UserModel {
     );
   }
 
-  static DateTime? _toDate(dynamic v) {
-    if (v is Timestamp) return v.toDate();
-    if (v is DateTime) return v;
+  /// Helper chuyển đổi dữ liệu thời gian từ Firestore về `DateTime`
+  static DateTime? _toDate(dynamic value) {
+    if (value is Timestamp) return value.toDate();
+    if (value is DateTime) return value;
     return null;
   }
 }

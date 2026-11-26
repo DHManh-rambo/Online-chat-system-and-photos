@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../repositories/auth_repository.dart';
-import '../../viewmodels/auth_viewmodel.dart';
+import '../../repositories/auth/auth_repository.dart';
+import '../../viewmodels/auth/auth_viewmodel.dart';
 
 /// Bước 1: nhập thông tin. Chưa có mật khẩu ở bước này.
 class RegisterView extends StatefulWidget {

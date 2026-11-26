@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../repositories/auth_repository.dart';
-import '../../viewmodels/auth_viewmodel.dart';
-import 'register_view.dart';
+import '../../repositories/auth/auth_repository.dart';
+import '../../viewmodels/auth/auth_viewmodel.dart';
+import 'register_screen.dart';
 
 class LoginView extends StatefulWidget {
   final AuthRepository repository;
